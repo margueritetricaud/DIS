@@ -5,6 +5,8 @@
 #include <SD.h>
 #include <SerialFlash.h>
 
+//this is a test
+
 AudioPlaySdWav           playWav1;
 // Use one of these 3 output types: Digital I2S, Digital S/PDIF, or Analog DAC
 AudioOutputI2S           audioOutput;
