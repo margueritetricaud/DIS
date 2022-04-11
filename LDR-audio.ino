@@ -21,10 +21,13 @@ float vol = 0.7;
 
 // LDR and LED
 int ldrPin = A3;
+int ledPin = 16;
 int ldrVal=0;
-int ledPin;
+float ldrVal_filter=0;
+int ldrMin = 0;
+int ldrMax = 1024;
 int ledVal=0;
-int ldrThresh = 500;
+int ldrThresh = 600;
 
 
 //--------------------------SETUP---------------------------//
@@ -49,37 +52,37 @@ void setup() {
   
     // ----- input/output setup -----//
     pinMode(ldrPin, INPUT);
-   pinMode(ledPin, OUTPUT);
+    pinMode(ledPin, OUTPUT);
+
+    ldrVal = analogRead(ldrPin);
+    ldrVal_filter = ldrVal;
 }
 
 
 // --------------------------------LOOP--------------------------------- //
 void loop() {
 
-  //INPUT READING
-  ldrVal = analogRead(ldrPin)*0.5 + ldrVal*0.5;
-  Serial.println(ldrVal);
+  /*----INPUT READING----*/
+  
+  ldrVal = analogRead(ldrPin);
+  ldrVal_filter = ldrVal*0.3+ldrVal_filter*0.7;
+  ldrVal_filter = map(ldrVal_filter, ldrMin, ldrMax, 0, 1024);
+  Serial.println(ldrVal_filter);
 
-  //OUTPUT LOGIC
-  if(ldrVal >= 500){
-    //playFile("BIRD2.WAV");  // filenames are always uppercase 8.3 format
-    stopFile("CRICKET.WAV");  // filenames are always uppercase 8.3 format
-  }else if(ldrVal  < 500){
-    //stopFile("BIRD2.WAV");
-    playFile("CRICKET.WAV");  // filenames are always uppercase 8.3 format
-  }
+  /*----OUTPUT LOGIC----*/
+  
+  //onoff();
+  volumeTrack();
+
 }
 
 
 // ------------------------- FUNCTIONS ---------------------------------- //
 void playFile(const char *filename)
 {
-  //Serial.print("Playing file: ");
-  // Serial.println(filename);
- 
   // Start playing the file.  This sketch continues to run while the file plays.
   if(!playWav1.isPlaying()){
-   Serial.print("Playing file: ");
+    Serial.print("Playing file: ");
     Serial.println(filename);
     playWav1.play(filename);
   }
@@ -89,10 +92,6 @@ void playFile(const char *filename)
 
 void stopFile(const char *filename)
 {
-  //Serial.print("Playing file: ");
-  // Serial.println(filename);
-
-  // Start playing the file.  This sketch continues to run while the file plays.
   if(playWav1.isPlaying()){
    Serial.print("Stop playback file: ");
    Serial.println(filename);
@@ -100,6 +99,29 @@ void stopFile(const char *filename)
   }
   // A brief delay for the library read WAV info
   delay(25);
+}
 
 
+// ------------------------- BEHAVIOURS ---------------------------------- //
+
+void volumeTrack(){
+  playFile("BIRD2.WAV");  // filenames are always uppercase 8.3 format 
+  vol = ldrVal_filter/1024;
+  //Serial.println(vol);
+  sgtl5000_1.volume(vol);
+  //digitalWrite(ledPin, HIGH);
+}
+
+void onoff(){
+  if(ldrVal >= ldrThresh){
+    //playFile("BIRD2.WAV");  // filenames are always uppercase 8.3 format
+    //stopFile("FREQ44.WAV");  // filenames are always uppercase 8.3 format
+    stopFile("BIRD2.WAV");
+    digitalWrite(ledPin, LOW);
+  }else if(ldrVal  < ldrThresh){
+    //stopFile("BIRD2.WAV");
+    //playFile("FREQ44.WAV");  // filenames are always uppercase 8.3 format
+    playFile("BIRD2.WAV");  // filenames are always uppercase 8.3 format
+    digitalWrite(ledPin, HIGH);
+  }
 }
