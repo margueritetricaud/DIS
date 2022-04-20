@@ -21,14 +21,14 @@ float vol = 0.7;
 
 // LDR and LED
 int ldrPin = A3;
-int ledPin = 16;
+int ledPin = 9;
 int ldrVal=0;
 float ldrVal_filter=0;
 int ldrMin = 0;
 int ldrMax = 1024;
 int ledVal=0;
 int ldrThresh = 600;
-
+int count =0;
 
 //--------------------------SETUP---------------------------//
 void setup() {
@@ -72,7 +72,9 @@ void loop() {
   /*----OUTPUT LOGIC----*/
   
   //onoff();
-  volumeTrack();
+  //volumeTrack();
+  volumeTrack_inverse();
+  //ledTest();
 
 }
 
@@ -109,7 +111,15 @@ void volumeTrack(){
   vol = ldrVal_filter/1024;
   //Serial.println(vol);
   sgtl5000_1.volume(vol);
-  //digitalWrite(ledPin, HIGH);
+  analogWrite(ledPin, 255*vol);
+}
+
+void volumeTrack_inverse(){
+  playFile("BIRD2.WAV");  // filenames are always uppercase 8.3 format 
+  vol = ldrVal_filter/1024;
+  //Serial.println(vol);
+  sgtl5000_1.volume(1-vol);
+  analogWrite(ledPin, 255*(1-vol));
 }
 
 void onoff(){
@@ -124,4 +134,15 @@ void onoff(){
     playFile("BIRD2.WAV");  // filenames are always uppercase 8.3 format
     digitalWrite(ledPin, HIGH);
   }
+}
+
+void ledTest(){
+  analogWrite(ledPin, count);
+  //digitalWrite(ledPin, HIGH);
+  if(count <=255){
+    count+=1;
+    delay(20);
+    playFile("BIRD2.WAV");  // filenames are always uppercase 8.3 format
+  }
+  
 }
