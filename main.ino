@@ -1,4 +1,3 @@
-
 #include <Audio.h>
 #include <Wire.h>
 #include <SPI.h>
@@ -6,7 +5,6 @@
 #include <SerialFlash.h>
 
 //AUDIO VARIABLES
-
 AudioPlaySdWav           playWav1;
 AudioOutputI2S           audioOutput;
 AudioConnection          patchCord1(playWav1, 0, audioOutput, 0);
@@ -24,11 +22,14 @@ int ldrPin = A3;
 int ledPin = 9;
 int ldrVal=0;
 float ldrVal_filter=0;
-int ldrMin = 0;
-int ldrMax = 1024;
-int ledVal=0;
-int ldrThresh = 600;
-int count =0;
+int ldrMin = 0; // minimum LDR input value
+int ldrMax = 1024; // maximum LDR input value
+int ledVal=0; // output LED brightness value - between 0 and 255
+int ldrThresh = 600; // brightness threshold - to calibrate depending on environment and source of light
+int ldrThresh_min = 400; // brightness threshold min for bandpass function 
+int ldrThresh_max = 600; // brightness threshold max for bandpass function 
+int count = 0; // counter for the led brightness
+int dir = 1; // increment for the led brightness
 
 //--------------------------SETUP---------------------------//
 void setup() {
@@ -71,15 +72,23 @@ void loop() {
 
   /*----OUTPUT LOGIC----*/
   
-  //onoff();
-  //volumeTrack();
-  volumeTrack_inverse();
-  //ledTest();
+    highpass_led(); // Only turns on the LED if the room brightness is over a certain threshold
+  //lowpass_led(); // Only turns on the LED if the room brightness is below a certain threshold
+  //bandpass_led(); // plays the audio and turns on the LED if the room brightness is within a certain range
+  
+  //highpass(); // Plays the audio and turns on the LED if the room brightness is over a certain threshold
+  //lowpass(); // Plays the audio and turns on the LED if the room brightness is below a certain threshold
+  //bandpass(); // plays the audio and turns on the LED if the room brightness is within a certain range
+  
+  //volumeTrack(); // Automatically plays the audio, turns on the LED and adjust the volume of the track depending on the room brightness 
+  //volumeTrack_inverse(); // Automatically plays the audio, turns on the LED and adjust the volume of the track depending on the room brightness - inversely 
+  
+  //ledTest_fade(); //On/Off fading of the LED
 
 }
 
 
-// ------------------------- FUNCTIONS ---------------------------------- //
+// ------------------------- AUDIO FUNCTIONS ---------------------------------- //
 void playFile(const char *filename)
 {
   // Start playing the file.  This sketch continues to run while the file plays.
@@ -122,27 +131,71 @@ void volumeTrack_inverse(){
   analogWrite(ledPin, 255*(1-vol));
 }
 
-void onoff(){
+void lowpasss(){
   if(ldrVal >= ldrThresh){
-    //playFile("BIRD2.WAV");  // filenames are always uppercase 8.3 format
-    //stopFile("FREQ44.WAV");  // filenames are always uppercase 8.3 format
     stopFile("BIRD2.WAV");
     digitalWrite(ledPin, LOW);
   }else if(ldrVal  < ldrThresh){
-    //stopFile("BIRD2.WAV");
-    //playFile("FREQ44.WAV");  // filenames are always uppercase 8.3 format
     playFile("BIRD2.WAV");  // filenames are always uppercase 8.3 format
     digitalWrite(ledPin, HIGH);
   }
 }
 
-void ledTest(){
-  analogWrite(ledPin, count);
-  //digitalWrite(ledPin, HIGH);
-  if(count <=255){
-    count+=1;
-    delay(20);
-    playFile("BIRD2.WAV");  // filenames are always uppercase 8.3 format
+void lowpasss_led(){
+  if(ldrVal >= ldrThresh){
+    digitalWrite(ledPin, LOW);
+  }else if(ldrVal  < ldrThresh){
+    digitalWrite(ledPin, HIGH);
   }
+}
+
+void highpass(){
+  if(ldrVal <= ldrThresh){
+    stopFile("BIRD2.WAV");
+    digitalWrite(ledPin, LOW);
+  }else if(ldrVal  > ldrThresh){
+    playFile("BIRD2.WAV");  // filenames are always uppercase 8.3 format
+    digitalWrite(ledPin, HIGH);
+  }
+}
+
+void highpass_led(){
+  if(ldrVal <= ldrThresh){
+    digitalWrite(ledPin, LOW);
+  }else if(ldrVal  > ldrThresh){
+    delay(20);
+    digitalWrite(ledPin, HIGH);
+  }
+}
+
+void bandpass(){
+  if(ldrVal >= ldrThresh_min && ldrVal <= ldrThresh_max){
+    playFile("BIRD2.WAV");  // filenames are always uppercase 8.3 format
+    digitalWrite(ledPin, HIGH);
+  }else{
+    stopFile("BIRD2.WAV");
+    digitalWrite(ledPin, LOW);
+  }
+}
+
+void bandpass_led(){
+  if(ldrVal >= ldrThresh_min && ldrVal <= ldrThresh_max){
+    digitalWrite(ledPin, HIGH);
+  }else{
+    digitalWrite(ledPin, LOW);
+  }
+}
+
+void ledTest_fade(){
+
+  if(count >=255){
+    dir = -1;
+  }else if(count <=0){
+    dir = +1;
+  }
+
+  count += dir;
+  analogWrite(ledPin, count);
+  delay(20);
   
 }
