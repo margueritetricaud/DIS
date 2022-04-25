@@ -10,7 +10,7 @@ AudioOutputI2S           audioOutput;
 AudioConnection          patchCord1(playWav1, 0, audioOutput, 0);
 AudioConnection          patchCord2(playWav1, 1, audioOutput, 1);
 AudioControlSGTL5000     sgtl5000_1;
-float vol = 0.7;
+float vol = 0.2;
 
 // Use these with the Teensy Audio Shield
 #define SDCARD_CS_PIN    10
@@ -70,8 +70,8 @@ void loop() {
   /*----OUTPUT LOGIC----*/
 
 //  ledTest_fade(); //On/Off fading of the LED
-//  audioTest(); // Plays the audio sample
-  highpass_led(600); // Only turns on the LED if the room brightness is over a certain threshold - between 0 and 1024
+  audioTest(); // Plays the audio sample
+//  highpass_led(600); // Only turns on the LED if the room brightness is over a certain threshold - between 0 and 1024
 //  lowpass_led(600); // Only turns on the LED if the room brightness is below a certain threshold - between 0 and 1024
 //  bandpass_led(300,500); // Plays the audio and turns on the LED if the room brightness is within a certain range - between 0 and 1024
 //  
@@ -80,8 +80,7 @@ void loop() {
 //  bandpass(300,500); // Plays the audio and turns on the LED if the room brightness is within a certain range - between 0 and 1024
 //  
 //  volumeTrack(); // Automatically plays the audio, turns on the LED and adjust the volume of the track depending on the room brightness 
-//  volumeTrack_inverse(); // Automatically plays the audio, turns on the LED and adjust the volume of the track depending on the room brightness - inversely 
-//  
+//  volumeTrack_inverse(); // Automatically plays the audio, turns on the LED and adjust the volume of the track depending on the room brightness - inversely   
 
 
 }
@@ -115,7 +114,7 @@ void stopFile(const char *filename)
 // ------------------------- BEHAVIOURS ---------------------------------- //
 
 void volumeTrack(){
-  playFile("BIRD2.WAV");  // filenames are always uppercase 8.3 format 
+  playFile("BIRD.WAV");  // filenames are always uppercase 8.3 format 
   vol = ldrVal_filter/1024;
   //Serial.println(vol);
   sgtl5000_1.volume(vol);
@@ -123,7 +122,7 @@ void volumeTrack(){
 }
 
 void volumeTrack_inverse(){
-  playFile("BIRD2.WAV");  // filenames are always uppercase 8.3 format 
+  playFile("BIRD.WAV");  // filenames are always uppercase 8.3 format 
   vol = ldrVal_filter/1024;
   //Serial.println(vol);
   sgtl5000_1.volume(1-vol);
@@ -132,10 +131,10 @@ void volumeTrack_inverse(){
 
 void lowpass(int ldrThresh){
   if(ldrVal >= ldrThresh){
-    stopFile("BIRD2.WAV");
+    stopFile("BIRD.WAV");
     digitalWrite(ledPin, LOW);
   }else if(ldrVal  < ldrThresh){
-    playFile("BIRD2.WAV");  // filenames are always uppercase 8.3 format
+    playFile("BIRD.WAV");  // filenames are always uppercase 8.3 format
     digitalWrite(ledPin, HIGH);
   }
 }
@@ -150,10 +149,10 @@ void lowpass_led(int ldrThresh){
 
 void highpass(int ldrThresh){
   if(ldrVal <= ldrThresh){
-    stopFile("BIRD2.WAV");
+    stopFile("BIRD.WAV");
     digitalWrite(ledPin, LOW);
   }else if(ldrVal  > ldrThresh){
-    playFile("BIRD2.WAV");  // filenames are always uppercase 8.3 format
+    playFile("BIRD.WAV");  // filenames are always uppercase 8.3 format
     digitalWrite(ledPin, HIGH);
   }
 }
@@ -169,10 +168,10 @@ void highpass_led(int ldrThresh){
 
 void bandpass(int minRange, int maxRange){
   if(ldrVal >= minRange && ldrVal <= maxRange){
-    playFile("BIRD2.WAV");  // filenames are always uppercase 8.3 format
+    playFile("BIRD.WAV");  // filenames are always uppercase 8.3 format
     digitalWrite(ledPin, HIGH);
   }else{
-    stopFile("BIRD2.WAV");
+    stopFile("BIRD.WAV");
     digitalWrite(ledPin, LOW);
   }
 }
@@ -200,5 +199,5 @@ void ledTest_fade(){
 }
 
 void audioTest(){
-  playFile("BIRD2.WAV");  // filenames are always uppercase 8.3 format
+  playFile("GRASSHOPER.WAV");  // filenames are always uppercase 8.3 format
 }
