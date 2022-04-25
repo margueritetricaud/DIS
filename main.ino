@@ -68,7 +68,9 @@ void loop() {
   Serial.println(ldrVal_filter);
 
   /*----OUTPUT LOGIC----*/
-  
+
+//  ledTest_fade(); //On/Off fading of the LED
+//  audioTest(); // Plays the audio sample
   highpass_led(600); // Only turns on the LED if the room brightness is over a certain threshold - between 0 and 1024
 //  lowpass_led(600); // Only turns on the LED if the room brightness is below a certain threshold - between 0 and 1024
 //  bandpass_led(300,500); // Plays the audio and turns on the LED if the room brightness is within a certain range - between 0 and 1024
@@ -80,7 +82,7 @@ void loop() {
 //  volumeTrack(); // Automatically plays the audio, turns on the LED and adjust the volume of the track depending on the room brightness 
 //  volumeTrack_inverse(); // Automatically plays the audio, turns on the LED and adjust the volume of the track depending on the room brightness - inversely 
 //  
-//  ledTest_fade(); //On/Off fading of the LED
+
 
 }
 
@@ -195,4 +197,8 @@ void ledTest_fade(){
   analogWrite(ledPin, count);
   delay(20);
   
+}
+
+void audioTest(){
+  playFile("BIRD2.WAV");  // filenames are always uppercase 8.3 format
 }
