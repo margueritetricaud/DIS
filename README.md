@@ -56,9 +56,13 @@ These following behaviours are available :
 
 - **volumeTrack()** : The device automatically plays the default audio sample, and adjust the playback volume to the brightness level in the room : the brighter the light, the louder the sound.
 - **volumeTrack_inverse()** : The device automatically plays the default audio sample, and adjust the playback volume to the brightness level in the room : the brighter the light, the quieter the sound.
-- **onoff()** : The device plays the sound sample when the brightness level is above a certain value
-- **onoff_inverse()** : The device plays the sound sample when the brightness level is below a certain value
-- **ledTest()** : A test fade on and off of the LED
+- **highpass()** : The device plays the sound sample and turns the LED on when the brightness level is above a certain value
+- **highpass_led()** : The device turns the LED on when the brightness level is above a certain value
+- **lowpass()** : The device plays the sound sample and turns the LED on when the brightness level is below a certain value
+- **lowpass_led()** : The device turns the LED on when the brightness level is below a certain value
+- **bandpass()** : The device plays the sound sample and turns the LED on when the brightness level is within a certain range
+- **bandpass_led()** : The device turns the LED on when the brightness level is within a certain range
+- **ledTest_fade()** : A test fade on and off of the LED
 
 #### Uploading code to the device
 
@@ -73,10 +77,19 @@ You should be able to upload the code to the device.
 
 #### Audio files 
 
+You can either : 
+- download an existing audio file (for instance using [FreeSound](https://freesound.org/))
+- create your own audio file (for instance using Audacity)
+
+The audio samples need to be formated with specific settings in order to play on the Teensy Audio shield. If these are not correct, no sound will play. You can use Audacity to change the format of your file. 
+
 - Format 
   * WAV mono track 
   * Rate : 44100 Hz 
   * Format  : 16 bit unsigned 
    * File name : uppercase 8.3 format 
 
-- SD card
+Also make sure that :
+- The audio starts right at the beginning of the file (avoid a long silence at the start, as this would affect the interactivity of the system)
+- The gain is adjusted
+- The audio file isn't too long or two short (between 2 seconds and 3 minutes)
