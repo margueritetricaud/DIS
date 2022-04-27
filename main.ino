@@ -28,14 +28,20 @@ int ledVal=0; // output LED brightness value - between 0 and 255
 int count = 0; // counter for the led brightness
 int dir = 1; // increment for the led brightness
 
+//Audio sample
+char sample[] = "SEAGULL.WAV";  // replace this with the name of the WAV file you want to play from the SD card
+
+
 //--------------------------SETUP---------------------------//
 void setup() {
   
   Serial.begin(9600);
+
+  Serial.println("Device starting up");
   
    // ----- audio setup ---//
       // Audio connections require memory to work.  For more detailed information, see the MemoryAndCpuUsage example
-      AudioMemory(8);
+     AudioMemory(8);
      sgtl5000_1.enable();
      sgtl5000_1.volume(vol);
      SPI.setMOSI(SDCARD_MOSI_PIN);
@@ -46,6 +52,8 @@ void setup() {
         Serial.println("Unable to access the SD card");
         delay(500);
       }
+    }else{
+       Serial.println("SD card found");
     }
   
     // ----- input/output setup -----//
@@ -54,6 +62,8 @@ void setup() {
 
     ldrVal = analogRead(ldrPin);
     ldrVal_filter = ldrVal;
+
+    Serial.println("Device ready");
 }
 
 
@@ -65,12 +75,12 @@ void loop() {
   ldrVal = analogRead(ldrPin);
   ldrVal_filter = ldrVal*0.3+ldrVal_filter*0.7;
   ldrVal_filter = map(ldrVal_filter, ldrMin, ldrMax, 0, 1024);
-  Serial.println(ldrVal_filter);
+  // Serial.println(ldrVal_filter);
 
   /*----OUTPUT LOGIC----*/
 
 //  ledTest_fade(); //On/Off fading of the LED
-  audioTest(); // Plays the audio sample
+//  audioTest(); // Plays the audio sample
 //  highpass_led(600); // Only turns on the LED if the room brightness is over a certain threshold - between 0 and 1024
 //  lowpass_led(600); // Only turns on the LED if the room brightness is below a certain threshold - between 0 and 1024
 //  bandpass_led(300,500); // Plays the audio and turns on the LED if the room brightness is within a certain range - between 0 and 1024
@@ -79,7 +89,7 @@ void loop() {
 //  lowpass(600); // Plays the audio and turns on the LED if the room brightness is below a certain threshold - between 0 and 1024
 //  bandpass(300,500); // Plays the audio and turns on the LED if the room brightness is within a certain range - between 0 and 1024
 //  
-//  volumeTrack(); // Automatically plays the audio, turns on the LED and adjust the volume of the track depending on the room brightness 
+  volumeTrack(); // Automatically plays the audio, turns on the LED and adjust the volume of the track depending on the room brightness 
 //  volumeTrack_inverse(); // Automatically plays the audio, turns on the LED and adjust the volume of the track depending on the room brightness - inversely   
 
 
@@ -114,7 +124,7 @@ void stopFile(const char *filename)
 // ------------------------- BEHAVIOURS ---------------------------------- //
 
 void volumeTrack(){
-  playFile("BIRD.WAV");  // filenames are always uppercase 8.3 format 
+  playFile(sample);  // filenames are always uppercase 8.3 format 
   vol = ldrVal_filter/1024;
   //Serial.println(vol);
   sgtl5000_1.volume(vol);
@@ -122,7 +132,7 @@ void volumeTrack(){
 }
 
 void volumeTrack_inverse(){
-  playFile("BIRD.WAV");  // filenames are always uppercase 8.3 format 
+  playFile(sample);  // filenames are always uppercase 8.3 format 
   vol = ldrVal_filter/1024;
   //Serial.println(vol);
   sgtl5000_1.volume(1-vol);
@@ -131,10 +141,10 @@ void volumeTrack_inverse(){
 
 void lowpass(int ldrThresh){
   if(ldrVal >= ldrThresh){
-    stopFile("BIRD.WAV");
+    stopFile(sample);
     digitalWrite(ledPin, LOW);
   }else if(ldrVal  < ldrThresh){
-    playFile("BIRD.WAV");  // filenames are always uppercase 8.3 format
+    playFile(sample);  // filenames are always uppercase 8.3 format
     digitalWrite(ledPin, HIGH);
   }
 }
@@ -149,10 +159,10 @@ void lowpass_led(int ldrThresh){
 
 void highpass(int ldrThresh){
   if(ldrVal <= ldrThresh){
-    stopFile("BIRD.WAV");
+    stopFile(sample);
     digitalWrite(ledPin, LOW);
   }else if(ldrVal  > ldrThresh){
-    playFile("BIRD.WAV");  // filenames are always uppercase 8.3 format
+    playFile(sample);  // filenames are always uppercase 8.3 format
     digitalWrite(ledPin, HIGH);
   }
 }
@@ -168,16 +178,34 @@ void highpass_led(int ldrThresh){
 
 void bandpass(int minRange, int maxRange){
   if(ldrVal >= minRange && ldrVal <= maxRange){
-    playFile("BIRD.WAV");  // filenames are always uppercase 8.3 format
+    playFile(sample);  // filenames are always uppercase 8.3 format
     digitalWrite(ledPin, HIGH);
   }else{
-    stopFile("BIRD.WAV");
+    stopFile(sample);
     digitalWrite(ledPin, LOW);
   }
 }
 
 void bandpass_led(int minRange, int maxRange){
   if(ldrVal >= minRange && ldrVal <= maxRange){
+    digitalWrite(ledPin, HIGH);
+  }else{
+    digitalWrite(ledPin, LOW);
+  }
+}
+
+void bandstop(int minRange, int maxRange){
+  if(ldrVal <= minRange && ldrVal >= maxRange){
+    playFile(sample);  // filenames are always uppercase 8.3 format
+    digitalWrite(ledPin, HIGH);
+  }else{
+    stopFile(sample);
+    digitalWrite(ledPin, LOW);
+  }
+}
+
+void bandstop_led(int minRange, int maxRange){
+  if(ldrVal <= minRange && ldrVal >= maxRange){
     digitalWrite(ledPin, HIGH);
   }else{
     digitalWrite(ledPin, LOW);
@@ -199,5 +227,5 @@ void ledTest_fade(){
 }
 
 void audioTest(){
-  playFile("GRASSHOPER.WAV");  // filenames are always uppercase 8.3 format
+  playFile(sample);  // filenames are always uppercase 8.3 format
 }
