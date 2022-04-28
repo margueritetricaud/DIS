@@ -10,7 +10,7 @@ AudioOutputI2S           audioOutput;
 AudioConnection          patchCord1(playWav1, 0, audioOutput, 0);
 AudioConnection          patchCord2(playWav1, 1, audioOutput, 1);
 AudioControlSGTL5000     sgtl5000_1;
-float vol = 0.2;
+float vol = 0.75;
 
 // Use these with the Teensy Audio Shield
 #define SDCARD_CS_PIN    10
@@ -29,8 +29,10 @@ int count = 0; // counter for the led brightness
 int dir = 1; // increment for the led brightness
 
 //Audio sample
-char sample[] = "SEAGULL.WAV";  // replace this with the name of the WAV file you want to play from the SD card
+char sample[] = "FROG2.WAV";  // replace this with the name of the WAV file you want to play from the SD card
 
+//delay
+int holdDelay = 100; // delay for the highpass function
 
 //--------------------------SETUP---------------------------//
 void setup() {
@@ -76,20 +78,22 @@ void loop() {
   ldrVal_filter = ldrVal*0.3+ldrVal_filter*0.7;
   ldrVal_filter = map(ldrVal_filter, ldrMin, ldrMax, 0, 1024);
   // Serial.println(ldrVal_filter);
-
+  Serial.println(vol);
+   
   /*----OUTPUT LOGIC----*/
 
 //  ledTest_fade(); //On/Off fading of the LED
 //  audioTest(); // Plays the audio sample
+
 //  highpass_led(600); // Only turns on the LED if the room brightness is over a certain threshold - between 0 and 1024
 //  lowpass_led(600); // Only turns on the LED if the room brightness is below a certain threshold - between 0 and 1024
 //  bandpass_led(300,500); // Plays the audio and turns on the LED if the room brightness is within a certain range - between 0 and 1024
 //  
 //  highpass(600); // Plays the audio and turns on the LED if the room brightness is over a certain threshold - between 0 and 1024
 //  lowpass(600); // Plays the audio and turns on the LED if the room brightness is below a certain threshold - between 0 and 1024
-//  bandpass(300,500); // Plays the audio and turns on the LED if the room brightness is within a certain range - between 0 and 1024
+  bandpass(800,1000); // Plays the audio and turns on the LED if the room brightness is within a certain range - between 0 and 1024
 //  
-  volumeTrack(); // Automatically plays the audio, turns on the LED and adjust the volume of the track depending on the room brightness 
+//  volumeTrack(); // Automatically plays the audio, turns on the LED and adjust the volume of the track depending on the room brightness 
 //  volumeTrack_inverse(); // Automatically plays the audio, turns on the LED and adjust the volume of the track depending on the room brightness - inversely   
 
 
@@ -125,7 +129,7 @@ void stopFile(const char *filename)
 
 void volumeTrack(){
   playFile(sample);  // filenames are always uppercase 8.3 format 
-  vol = ldrVal_filter/1024;
+  vol = map(ldrVal_filter,0,1024,0,0.75);
   //Serial.println(vol);
   sgtl5000_1.volume(vol);
   analogWrite(ledPin, 255*vol);
@@ -133,10 +137,10 @@ void volumeTrack(){
 
 void volumeTrack_inverse(){
   playFile(sample);  // filenames are always uppercase 8.3 format 
-  vol = ldrVal_filter/1024;
+  vol = map(ldrVal_filter,0,1024,0.75,0);
   //Serial.println(vol);
-  sgtl5000_1.volume(1-vol);
-  analogWrite(ledPin, 255*(1-vol));
+  sgtl5000_1.volume(vol);
+  analogWrite(ledPin, 255*(vol));
 }
 
 void lowpass(int ldrThresh){
@@ -159,9 +163,11 @@ void lowpass_led(int ldrThresh){
 
 void highpass(int ldrThresh){
   if(ldrVal <= ldrThresh){
+    delay(holdDelay);
     stopFile(sample);
     digitalWrite(ledPin, LOW);
   }else if(ldrVal  > ldrThresh){
+    delay(holdDelay);
     playFile(sample);  // filenames are always uppercase 8.3 format
     digitalWrite(ledPin, HIGH);
   }
@@ -169,9 +175,10 @@ void highpass(int ldrThresh){
 
 void highpass_led(int ldrThresh){
   if(ldrVal <= ldrThresh){
+    delay(holdDelay);
     digitalWrite(ledPin, LOW);
   }else if(ldrVal  > ldrThresh){
-    delay(20);
+    delay(holdDelay);
     digitalWrite(ledPin, HIGH);
   }
 }
