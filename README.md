@@ -50,9 +50,9 @@ Download and install the latest version of [Audacity](https://www.fosshub.com/Au
 #### Code
 
 A variety of behaviour functions are available within the main source code. These are available at the end of the code after the loop, in the **Behaviours** section. 
-Note : these functions are not compiled into a library so that participants can have access to them and change them if necessary.
+Note : these functions are not compiled into a library so that participants can easily have access to them and change them if necessary.
 
-These following behaviours are available :
+Some of the following behaviours are available on the source code, and more are being added :
 
 - **volumeTrack()** : The device automatically plays the default audio sample, and adjust the playback volume to the brightness level in the room : the brighter the light, the louder the sound.
 - **volumeTrack_inverse()** : The device automatically plays the default audio sample, and adjust the playback volume to the brightness level in the room : the brighter the light, the quieter the sound.
