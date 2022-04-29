@@ -100,7 +100,7 @@ void setup() {
 // ------------------------------- MAIN LOOP --------------------------------- //
 void loop() {
 
-  //------ INPUT READING -----//
+  /*------ INPUT READING -----*/
   
   ldrVal = analogRead(ldrPin);
   ldrVal_filter = ldrVal*0.3+ldrVal_filter*0.7;
@@ -108,7 +108,7 @@ void loop() {
   //Serial.println(ldrVal_filter); //prints the filtered value of the LDR to the monitor 
   //Serial.println(vol);
    
-  //----- OUTPUT LOGIC -----//
+  /*----- OUTPUT LOGIC -----*/
 
 //  ledTest_fade(); //On/Off fading of the LED
 //  lowpass_led(600); // Only turns on the LED if the room brightness is below a certain threshold - between 0 and 1024
@@ -118,9 +118,9 @@ void loop() {
 //  lowpass(600); // Plays the audio and turns on the LED if the room brightness is below a certain threshold - between 0 and 1024
 //  highpass(600); // Plays the audio and turns on the LED if the room brightness is over a certain threshold - between 0 and 1024
 //  bandpass(800,1000); // Plays the audio and turns on the LED if the room brightness is within a certain range - between 0 and 1024
-  volumeTrack(); // Automatically plays the audio, turns on the LED and adjust the volume of the track depending on the room brightness 
+//  volumeTrack(); // Automatically plays the audio, turns on the LED and adjust the volume of the track depending on the room brightness 
 //  volumeTrack_inverse(); // Automatically plays the audio, turns on the LED and adjust the volume of the track depending on the room brightness - inversely   
-//  waveform(); // Plays a sine tone and changes the frequency depending on the brightness level - the brighter the light, the higher the pitch.
+  waveform(); // Plays a sine tone and changes the frequency depending on the brightness level - the brighter the light, the higher the pitch.
 
 }
 
@@ -263,4 +263,6 @@ void waveform(){
   freq = map(ldrVal_filter,0,1024,20,700);
   waveform1.frequency(freq);
   waveform1.begin(current_waveform);
+  ledVal = pow(255, map(ldrVal_filter,0,1024,0,1));
+  analogWrite(ledPin,ledVal) ;
 }
