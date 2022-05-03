@@ -105,19 +105,19 @@ void loop() {
   ldrVal = analogRead(ldrPin);
   ldrVal_filter = ldrVal*0.3+ldrVal_filter*0.7;
   ldrVal_filter = map(ldrVal_filter, ldrMin, ldrMax, 0, 1024);
-  //Serial.println(ldrVal_filter); //prints the filtered value of the LDR to the monitor 
+  Serial.println(ldrVal_filter); //prints the filtered value of the LDR to the monitor 
   //Serial.println(vol);
    
   /*----- OUTPUT LOGIC -----*/
 
-  ledTest_fade(); //On/Off fading of the LED
+ledTest_fade(); //On/Off fading of the LED
 //  lowpass_led(600); // Only turns on the LED if the room brightness is below a certain threshold - between 0 and 1024
 //  highpass_led(600); // Only turns on the LED if the room brightness is over a certain threshold - between 0 and 1024
 //  bandpass_led(300,500); // Plays the audio and turns on the LED if the room brightness is within a certain range - between 0 and 1024
 //  audioTest(); // Plays the audio sample
 //  lowpass(600); // Plays the audio and turns on the LED if the room brightness is below a certain threshold - between 0 and 1024
 //  highpass(600); // Plays the audio and turns on the LED if the room brightness is over a certain threshold - between 0 and 1024
-//  bandpass(800,1000); // Plays the audio and turns on the LED if the room brightness is within a certain range - between 0 and 1024
+//  bandpass(400,600); // Plays the audio and turns on the LED if the room brightness is within a certain range - between 0 and 1024
 //  volumeTrack(); // Automatically plays the audio, turns on the LED and adjust the volume of the track depending on the room brightness 
 //  volumeTrack_inverse(); // Automatically plays the audio, turns on the LED and adjust the volume of the track depending on the room brightness - inversely   
 //  waveform(); // Plays a sine tone and changes the frequency depending on the brightness level - the brighter the light, the higher the pitch.
@@ -163,7 +163,7 @@ void volumeTrack(){
 void volumeTrack_inverse(){
   playFile(sample);  // filenames are always uppercase 8.3 format 
   vol = map(ldrVal_filter,0,1024,0.75,0);
-  //Serial.println(vol);
+  sgtl5000_1.volume(vol);
   ledVal = pow(255, vol);
   analogWrite(ledPin,ledVal) ;
 }
