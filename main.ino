@@ -51,7 +51,7 @@ float ldrVal_filter=0; //filtered value of the LDR sensor to reduce noise
 int ldrMin = 0; // minimum LDR input value
 int ldrMax = 1024; // maximum LDR input value
 int ledVal=0; // output LED brightness value - between 0 and 255
-int count = 0; // counter for the led brightness fade
+float count = 0; // counter for the led brightness fade
 int dir = 1; // increment for the led brightness fade
 
 //INPUT/OUTPUT PARAMETERS
@@ -84,7 +84,7 @@ void setup() {
 
     // waveform setup
       waveform1.frequency(freq);
-      waveform1.amplitude(0.5);
+      waveform1.amplitude(0);
       current_waveform = WAVEFORM_SINE;    
   
     // ----- Input/Output Setup -----//
@@ -110,7 +110,7 @@ void loop() {
    
   /*----- OUTPUT LOGIC -----*/
 
-//  ledTest_fade(); //On/Off fading of the LED
+  ledTest_fade(); //On/Off fading of the LED
 //  lowpass_led(600); // Only turns on the LED if the room brightness is below a certain threshold - between 0 and 1024
 //  highpass_led(600); // Only turns on the LED if the room brightness is over a certain threshold - between 0 and 1024
 //  bandpass_led(300,500); // Plays the audio and turns on the LED if the room brightness is within a certain range - between 0 and 1024
@@ -120,7 +120,7 @@ void loop() {
 //  bandpass(800,1000); // Plays the audio and turns on the LED if the room brightness is within a certain range - between 0 and 1024
 //  volumeTrack(); // Automatically plays the audio, turns on the LED and adjust the volume of the track depending on the room brightness 
 //  volumeTrack_inverse(); // Automatically plays the audio, turns on the LED and adjust the volume of the track depending on the room brightness - inversely   
-  waveform(); // Plays a sine tone and changes the frequency depending on the brightness level - the brighter the light, the higher the pitch.
+//  waveform(); // Plays a sine tone and changes the frequency depending on the brightness level - the brighter the light, the higher the pitch.
 
 }
 
@@ -251,8 +251,9 @@ void ledTest_fade(){
     dir = +1;
   }
   count += dir;
-  analogWrite(ledPin, count);
-  delay(20);
+  ledVal = pow(255, map(count,0,255,0,1));
+  delay(10);
+  analogWrite(ledPin, ledVal);
 }
 
 void audioTest(){
@@ -262,6 +263,7 @@ void audioTest(){
 void waveform(){
   freq = map(ldrVal_filter,0,1024,20,700);
   waveform1.frequency(freq);
+  waveform1.amplitude(0.5);
   waveform1.begin(current_waveform);
   ledVal = pow(255, map(ldrVal_filter,0,1024,0,1));
   analogWrite(ledPin,ledVal) ;
