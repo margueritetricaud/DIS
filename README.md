@@ -1,4 +1,4 @@
-# Swarm Programming // Sonic Ecosystems - Digital Innovation Season
+# Sonic Swarm - Digital Innovation Season
 
 ### Central Saint Martins - 04/05/2022 
 _created by Marguerite Tricaud_
@@ -8,7 +8,7 @@ _created by Marguerite Tricaud_
 
 ## Project description
 
-Sonic Ecosystems is a workshop created for the Digital Innovation Season 2022 at Central Saint Martins, London, UK. 
+Sonic Swarm is a workshop created for the Digital Innovation Season 2022 at Central Saint Martins, London, UK. 
 
 This workshop explores the creative potential of self-organising systems, distributed intelligence and modular design in the context of audiovisual interactive art. 
 During the workshop, participants are invited to program the behaviour of small electronic devices to create emergent sonic and light patterns.
