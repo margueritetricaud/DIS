@@ -1,5 +1,5 @@
 /* 
- Digital Innovation Season - Swarm Programming // Sonic Ecosystems Workshop
+ Digital Innovation Season - Sonic Swarm Workshop
  Created by Marguerite Tricaud
  Central Saint Martins - May 2022
 
